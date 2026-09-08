@@ -1,0 +1,46 @@
+schema_version: 1
+
+context:
+  version: 0.0.2
+
+package:
+  name: diffle
+  version: ${{ version }}
+
+source:
+  url: https://registry.npmjs.org/@moritzwilksch/diffle/-/diffle-${{ version }}.tgz
+  sha256: 9c336716122be5d9c4ebbea5126aea52c88a3e62ae06d508329ae6903428b160
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - nodejs
+    - pnpm
+    - pnpm-licenses
+  run:
+    - nodejs
+
+tests:
+  - package_contents:
+      bin:
+        - diffle
+  - script:
+      - diffle --help
+      - diffle working --help
+      - diffle --skill
+
+about:
+  homepage: https://github.com/moritzwilksch/diffle
+  summary: Local git diff reviewer in the browser with line comments exported as agent prompts
+  license: Apache-2.0
+  license_file:
+    - LICENSE
+    - third-party-licenses.txt
+  repository: https://github.com/moritzwilksch/diffle
+
+extra:
+  recipe-maintainers:
+    - moritzwilksch
+    - pavelzw
