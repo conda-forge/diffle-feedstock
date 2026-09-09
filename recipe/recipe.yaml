@@ -12,13 +12,15 @@ source:
   sha256: 9c336716122be5d9c4ebbea5126aea52c88a3e62ae06d508329ae6903428b160
 
 build:
-  number: 0
+  number: 1
 
 requirements:
   build:
     - nodejs
     - pnpm
     - pnpm-licenses
+  host:
+    - nodejs
   run:
     - nodejs
 
