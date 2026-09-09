@@ -30,8 +30,7 @@ tests:
         - diffle
   - script:
       - diffle --help
-      - diffle working --help
-      - diffle --skill
+      - diffle --version
 
 about:
   homepage: https://github.com/moritzwilksch/diffle
