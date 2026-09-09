@@ -9,34 +9,50 @@ set -xe
 MINIFORGE_HOME="${MINIFORGE_HOME:-${HOME}/miniforge3}"
 MINIFORGE_HOME="${MINIFORGE_HOME%/}" # remove trailing slash
 export CONDA_BLD_PATH="${CONDA_BLD_PATH:-${MINIFORGE_HOME}/conda-bld}"
-
-( startgroup "Provisioning base env with micromamba" ) 2> /dev/null
-MICROMAMBA_VERSION="1.5.10-0"
-if [[ "$(uname -m)" == "arm64" ]]; then
-  osx_arch="osx-arm64"
-else
-  osx_arch="osx-64"
+( startgroup "Provisioning base env with pixi" ) 2> /dev/null
+mkdir -p "${MINIFORGE_HOME}"
+curl -fsSL https://pixi.sh/install.sh | bash
+export PATH="~/.pixi/bin:$PATH"
+arch=$(uname -m)
+if [[ "$arch" == "x86_64" ]]; then
+  arch="64"
 fi
-MICROMAMBA_URL="https://github.com/mamba-org/micromamba-releases/releases/download/${MICROMAMBA_VERSION}/micromamba-${osx_arch}"
-MAMBA_ROOT_PREFIX="${MINIFORGE_HOME}-micromamba-$(date +%s)"
-echo "Downloading micromamba ${MICROMAMBA_VERSION}"
-micromamba_exe="$(mktemp -d)/micromamba"
-curl -L -o "${micromamba_exe}" "${MICROMAMBA_URL}"
-chmod +x "${micromamba_exe}"
+sed -i.bak "s/platforms = .*/platforms = [\"osx-${arch}\"]/" pixi.toml
 echo "Creating environment"
-"${micromamba_exe}" create --yes --root-prefix "${MAMBA_ROOT_PREFIX}" --prefix "${MINIFORGE_HOME}" \
-  --channel conda-forge \
-  pip rattler-build conda-forge-ci-setup=4 "conda-build>=26.3"
-echo "Moving pkgs cache from ${MAMBA_ROOT_PREFIX} to ${MINIFORGE_HOME}"
-mv "${MAMBA_ROOT_PREFIX}/pkgs" "${MINIFORGE_HOME}"
-echo "Cleaning up micromamba"
-rm -rf "${MAMBA_ROOT_PREFIX}" "${micromamba_exe}" || true
-( endgroup "Provisioning base env with micromamba" ) 2> /dev/null
+pixi install --environment build
+pixi list --environment build
+echo "Activating environment"
+eval "$(pixi shell-hook --environment build)"
+mv pixi.toml.bak pixi.toml
+( endgroup "Provisioning base env with pixi" ) 2> /dev/null
+
+( startgroup "Repairing perl on osx-arm64" ) 2> /dev/null
+# TEMPORARY WORKAROUND for https://github.com/conda-forge/perl-feedstock/issues/78 --
+# remove once conda-forge ships a fixed perl for osx-arm64.
+# perl 5.32.1 build 8_h88b7d96_perl5 (osx-arm64) ships bin/perl and bin/perl5.32.1
+# without any LC_RPATH, so their @rpath/perl5/5.32/core_perl/CORE/libperl.dylib
+# dependency cannot be resolved and every perl invocation aborts. perl is pulled into
+# the build env via git -> conda-forge-ci-setup, and conda-forge-ci-setup's
+# download_osx_sdk.sh verifies the SDK tarball with `shasum`, which is a perl script --
+# so the job dies before the recipe is even built. Build 7 of the same version has
+# `LC_RPATH @loader_path/../lib/`, so put that back and re-sign (arm64 binaries need a
+# valid signature). Note: a `conda-smithy rerender` will drop this block.
+if [[ "$(uname -m)" == "arm64" ]]; then
+  perl_bin="$(command -v perl || true)"
+  # only touch the perl from the pixi env, never a system/SIP-protected one
+  if [[ "${perl_bin}" == */.pixi/envs/build/bin/perl ]] && ! "${perl_bin}" -e 'exit 0' 2>/dev/null; then
+    echo "perl at ${perl_bin} is broken, adding the missing rpath"
+    for perl_exe in "${perl_bin}" "${perl_bin}"5.*; do
+      [[ -f "${perl_exe}" ]] || continue
+      /usr/bin/install_name_tool -add_rpath "@loader_path/../lib/" "${perl_exe}"
+      /usr/bin/codesign --force --sign - "${perl_exe}"
+    done
+    "${perl_bin}" -e 'print "perl is usable again\n"'
+  fi
+fi
+( endgroup "Repairing perl on osx-arm64" ) 2> /dev/null
 
 ( startgroup "Configuring conda" ) 2> /dev/null
-echo "Activating environment"
-source "${MINIFORGE_HOME}/etc/profile.d/conda.sh"
-conda activate base
 export CONDA_SOLVER="libmamba"
 export CONDA_LIBMAMBA_SOLVER_NO_CHANNELS_FROM_INSTALLED=1
 
@@ -105,6 +121,10 @@ if [[ "${BUILD_WITH_CONDA_DEBUG:-0}" == 1 ]]; then
 
     rattler-build debug shell
 else
+
+    if [[ "${HOST_PLATFORM}" != "${BUILD_PLATFORM}" ]]; then
+        EXTRA_CB_OPTIONS="${EXTRA_CB_OPTIONS:-} --test skip"
+    fi
 
     rattler-build build --recipe ./recipe \
         -m ./.ci_support/${CONFIG}.yaml \
