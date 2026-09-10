@@ -12,7 +12,7 @@ source:
   sha256: 4baeda75d9541accf7676f3c4ce1927c3617773683e5aec0cfff560f6903fbdf
 
 build:
-  number: 0
+  number: 1
 
 requirements:
   build:
@@ -28,6 +28,8 @@ tests:
   - package_contents:
       bin:
         - diffle
+      files:
+        - etc/pixi/diffle/global-ignore-conda-prefix
   - script:
       - diffle --help
       - diffle --version
