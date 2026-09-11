@@ -1,7 +1,7 @@
 schema_version: 1
 
 context:
-  version: "0.1.1"
+  version: "0.1.3"
 
 package:
   name: diffle
@@ -9,7 +9,7 @@ package:
 
 source:
   url: https://registry.npmjs.org/@moritzwilksch/diffle/-/diffle-${{ version }}.tgz
-  sha256: 55b86e872e1220ee329253e6abdcd0f702bb1a523a180fd36582b2cfc22ecb24
+  sha256: 9167a3aeb2e6e93d5f177922fa7de1f9473fada1361260559de30cd551b8f265
 
 build:
   number: 0
@@ -40,6 +40,12 @@ requirements:
       - lua-language-server
     terraform:
       - terraform-ls
+    json:
+      - vscode-langservers-extracted
+    yaml:
+      - yaml-language-server
+    toml:
+      - tombi
 
 tests:
   - package_contents:
