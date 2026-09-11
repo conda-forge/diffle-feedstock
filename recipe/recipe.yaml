@@ -47,6 +47,11 @@ tests:
         - diffle
       files:
         - etc/pixi/diffle/global-ignore-conda-prefix
+        - if: unix
+          then:
+            - share/zsh/site-functions/_diffle
+            - share/bash-completion/completions/diffle
+            - share/fish/vendor_completions.d/diffle.fish
   - script:
       - diffle --help
       - diffle --version
