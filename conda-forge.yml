@@ -11,3 +11,5 @@ provider:
   win_arm64: default
 conda_install_tool: pixi
 test: native_and_emulated
+bot:
+  automerge: true
