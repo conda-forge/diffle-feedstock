@@ -22,7 +22,7 @@ requirements:
     - cargo-bundle-licenses
     - cargo-auditable
     - cmake
-    - nodejs
+    - nodejs >=24.14
   extras:
     python:
       - pyrefly >=1.3.0
