@@ -6,8 +6,6 @@ channel_sources:
 - conda-forge
 channel_targets:
 - conda-forge main
-nodejs:
-- '26'
 rust_compiler:
 - rust
 target_platform:
