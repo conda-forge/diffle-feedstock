@@ -1,11 +1,16 @@
-@echo off
-call npm install --global --prefix "%PREFIX%" --ignore-scripts --omit=dev --install-links .
+@echo on
+
+REM The Rust binary embeds the web client from dist\client
+call npm ci --ignore-scripts
+if errorlevel 1 exit /b 1
+call npm run build
 if errorlevel 1 exit /b 1
 
-set PNPM_CONFIG_PM_ON_FAIL=ignore
-call pnpm install --prod --ignore-scripts
+set CARGO_PROFILE_RELEASE_STRIP=symbols
+set CARGO_PROFILE_RELEASE_LTO=fat
+cargo auditable install --locked --no-track --bins --root "%LIBRARY_PREFIX%" --path crates\diffle
 if errorlevel 1 exit /b 1
-call pnpm-licenses generate-disclaimer --prod --output-file=third-party-licenses.txt
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 if errorlevel 1 exit /b 1
 
 REM Pixi: prevent CONDA_PREFIX from leaking into sandboxed processes

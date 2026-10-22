@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
-npm install --global --prefix "${PREFIX}" --ignore-scripts --omit=dev --install-links .
+# The Rust binary embeds the web client from dist/client
+npm ci --ignore-scripts
+npm run build
 
-export PNPM_CONFIG_PM_ON_FAIL=ignore
-pnpm install --prod --ignore-scripts
-pnpm-licenses generate-disclaimer --prod --output-file=third-party-licenses.txt
+export CARGO_PROFILE_RELEASE_STRIP=symbols
+export CARGO_PROFILE_RELEASE_LTO=fat
+cargo auditable install --locked --no-track --bins --root "${PREFIX}" --path crates/diffle
+cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
 # Pixi: prevent CONDA_PREFIX from leaking into sandboxed processes
 mkdir -p "${PREFIX}/etc/pixi/diffle"

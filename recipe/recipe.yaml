@@ -1,27 +1,27 @@
 schema_version: 1
 
 context:
-  version: "0.2.10"
+  version: "0.3.0"
 
 package:
   name: diffle
   version: ${{ version }}
 
 source:
-  url: https://registry.npmjs.org/@moritzwilksch/diffle/-/diffle-${{ version }}.tgz
-  sha256: 10b28cbada562c2f0baaa69cc1380149be3390d93627a218d7253bf749f6f590
+  url: https://github.com/moritzwilksch/diffle/archive/refs/tags/v${{ version }}.tar.gz
+  sha256: 633d0f2ceb329746f148b2bfa1aa2dd16e47cb7d11722ca3f4cdc88376fd2cf2
 
 build:
   number: 0
 
 requirements:
   build:
-    - nodejs
-    - pnpm
-    - pnpm-licenses
-  host:
-    - nodejs
-  run:
+    - ${{ stdlib('c') }}
+    - ${{ compiler('c') }}
+    - ${{ compiler('rust') }}
+    - cargo-bundle-licenses
+    - cargo-auditable
+    - cmake
     - nodejs
   extras:
     python:
@@ -68,7 +68,8 @@ about:
   license: Apache-2.0
   license_file:
     - LICENSE
-    - third-party-licenses.txt
+    - THIRD_PARTY_NOTICES.md
+    - THIRDPARTY.yml
   repository: https://github.com/moritzwilksch/diffle
 
 extra:
