@@ -23,6 +23,9 @@ requirements:
     - cargo-auditable
     - cmake
     - nodejs >=24.14
+    # aws-lc-sys needs clang-cl to assemble its ARM64 sources
+    - if: win and arm64
+      then: clang
   extras:
     python:
       - pyrefly >=1.3.0

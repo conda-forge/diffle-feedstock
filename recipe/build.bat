@@ -6,6 +6,9 @@ if errorlevel 1 exit /b 1
 call npm run build
 if errorlevel 1 exit /b 1
 
+REM aws-lc-sys needs clang-cl to assemble its ARM64 sources; conda-forge sets CC to cl.exe
+if "%target_platform%"=="win-arm64" set AWS_LC_SYS_CC=clang-cl
+
 set CARGO_PROFILE_RELEASE_STRIP=symbols
 set CARGO_PROFILE_RELEASE_LTO=fat
 cargo auditable install --locked --no-track --bins --root "%LIBRARY_PREFIX%" --path crates\diffle
