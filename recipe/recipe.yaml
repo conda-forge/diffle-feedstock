@@ -1,7 +1,7 @@
 schema_version: 1
 
 context:
-  version: "0.3.2"
+  version: "0.3.3"
 
 package:
   name: diffle
@@ -9,7 +9,7 @@ package:
 
 source:
   url: https://github.com/moritzwilksch/diffle/archive/refs/tags/v${{ version }}.tar.gz
-  sha256: 2000ef0967d63b46d4560aa11b77a410510070063ee03a552fa8c281aaf6e579
+  sha256: 48c4a2d5929b2d96a62d0262360f8e81c97da7f19c6b78aaa574c3045e944c58
 
 build:
   number: 0
