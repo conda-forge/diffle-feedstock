@@ -7,6 +7,14 @@ npm run build
 
 export CARGO_PROFILE_RELEASE_STRIP=symbols
 export CARGO_PROFILE_RELEASE_LTO=fat
+
+if [[ "${target_platform}" == "linux-ppc64le" ]]; then
+  # rustc links with rust-lld, which can't handle the inline PLT relocations GCC emits with -fno-plt on ppc64le
+  export CFLAGS="${CFLAGS//-fno-plt/}"
+  # cc-rs prefers the target-specific copy that the rust activation makes of CFLAGS
+  export CFLAGS_powerpc64le_unknown_linux_gnu="${CFLAGS_powerpc64le_unknown_linux_gnu//-fno-plt/}"
+fi
+
 cargo auditable install --locked --no-track --bins --root "${PREFIX}" --path crates/diffle
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
@@ -15,6 +23,7 @@ mkdir -p "${PREFIX}/etc/pixi/diffle"
 touch "${PREFIX}/etc/pixi/diffle/global-ignore-conda-prefix"
 
 mkdir -p $PREFIX/share/zsh/site-functions $PREFIX/share/bash-completion/completions $PREFIX/share/fish/vendor_completions.d
-$PREFIX/bin/diffle completion --shell zsh > $PREFIX/share/zsh/site-functions/_diffle
-$PREFIX/bin/diffle completion --shell bash > $PREFIX/share/bash-completion/completions/diffle
-$PREFIX/bin/diffle completion --shell fish > $PREFIX/share/fish/vendor_completions.d/diffle.fish
+# When cross-compiling, run the target binary through the emulator
+${CROSSCOMPILING_EMULATOR:-} $PREFIX/bin/diffle completion --shell zsh > $PREFIX/share/zsh/site-functions/_diffle
+${CROSSCOMPILING_EMULATOR:-} $PREFIX/bin/diffle completion --shell bash > $PREFIX/share/bash-completion/completions/diffle
+${CROSSCOMPILING_EMULATOR:-} $PREFIX/bin/diffle completion --shell fish > $PREFIX/share/fish/vendor_completions.d/diffle.fish
