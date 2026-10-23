@@ -7,6 +7,11 @@ npm run build
 
 export CARGO_PROFILE_RELEASE_STRIP=symbols
 export CARGO_PROFILE_RELEASE_LTO=fat
+
+if [[ "${target_platform}" == "linux-ppc64le" ]]; then
+  # rust-lld can't handle the PLT relocations GCC emits with -fno-plt on ppc64le
+  export CARGO_TARGET_POWERPC64LE_UNKNOWN_LINUX_GNU_RUSTFLAGS="${CARGO_TARGET_POWERPC64LE_UNKNOWN_LINUX_GNU_RUSTFLAGS:-} -Clinker-features=-lld -Clink-self-contained=-linker"
+fi
 cargo auditable install --locked --no-track --bins --root "${PREFIX}" --path crates/diffle
 cargo-bundle-licenses --format yaml --output THIRDPARTY.yml
 
