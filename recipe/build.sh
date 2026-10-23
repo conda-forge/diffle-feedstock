@@ -11,7 +11,6 @@ export CARGO_PROFILE_RELEASE_LTO=fat
 if [[ "${target_platform}" == "linux-ppc64le" ]]; then
   # rustc links with rust-lld, which can't handle the inline PLT relocations GCC emits with -fno-plt on ppc64le
   export CFLAGS="${CFLAGS//-fno-plt/}"
-  export CXXFLAGS="${CXXFLAGS//-fno-plt/}"
 fi
 
 cargo auditable install --locked --no-track --bins --root "${PREFIX}" --path crates/diffle
