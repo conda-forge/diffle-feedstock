@@ -156,29 +156,6 @@ mamba repoquery depends diffle --channel conda-forge
 </details>
 
 
-Optional Dependencies
----------------------
-
-`diffle-feedstock` defines the following [CEP-44] optional
-dependency groups:
-
-| Install | Optional Dependencies |
-| --- | --- |
-| `diffle[extras=go]` | `gopls` |
-| `diffle[extras=java]` | `jdtls` |
-| `diffle[extras=json]` | `vscode-langservers-extracted` |
-| `diffle[extras=lua]` | `lua-language-server` |
-| `diffle[extras=python]` | `pyrefly` |
-| `diffle[extras=ruby]` | `ruby-lsp` |
-| `diffle[extras=rust]` | `rust-analyzer` |
-| `diffle[extras=terraform]` | `terraform-ls` |
-| `diffle[extras=toml]` | `tombi` |
-| `diffle[extras=typescript]` | `typescript-language-server` |
-| `diffle[extras=yaml]` | `yaml-language-server` |
-
-[CEP-44]: https://github.com/conda/ceps/blob/main/cep-0044.md
-
-
 About conda-forge
 =================
 
@@ -193,7 +170,9 @@ for each of the installable packages. Such a repository is known as a *feedstock
 A feedstock is made up of a conda recipe (the instructions on what and how to build
 the package) and the necessary configurations for automatic building using freely
 available continuous integration services. Thanks to the awesome service provided by
-[Azure](https://azure.microsoft.com/en-us/services/devops/) and [GitHub](https://github.com/)
+[Azure](https://azure.microsoft.com/en-us/services/devops/), [GitHub](https://github.com/),
+[CircleCI](https://circleci.com/), [AppVeyor](https://www.appveyor.com/),
+[Drone](https://cloud.drone.io/welcome), and [TravisCI](https://travis-ci.com/)
 it is possible to build and upload installable packages to the
 [conda-forge](https://anaconda.org/conda-forge) [anaconda.org](https://anaconda.org/)
 channel for Linux, Windows and OSX respectively.
