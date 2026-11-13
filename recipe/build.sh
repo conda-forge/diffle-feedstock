@@ -27,3 +27,6 @@ mkdir -p $PREFIX/share/zsh/site-functions $PREFIX/share/bash-completion/completi
 ${CROSSCOMPILING_EMULATOR:-} $PREFIX/bin/diffle completion --shell zsh > $PREFIX/share/zsh/site-functions/_diffle
 ${CROSSCOMPILING_EMULATOR:-} $PREFIX/bin/diffle completion --shell bash > $PREFIX/share/bash-completion/completions/diffle
 ${CROSSCOMPILING_EMULATOR:-} $PREFIX/bin/diffle completion --shell fish > $PREFIX/share/fish/vendor_completions.d/diffle.fish
+
+mkdir -p $PREFIX/share/agent-skills/diffle
+${CROSSCOMPILING_EMULATOR:-} $PREFIX/bin/diffle skill > $PREFIX/share/agent-skills/diffle/SKILL.md

@@ -22,3 +22,7 @@ if not exist "%MARKER_DIR%" (
     mkdir "%MARKER_DIR%" 2>nul
 )
 type nul > "%MARKER_DIR%\global-ignore-conda-prefix"
+
+mkdir "%PREFIX%\share\agent-skills\diffle"
+"%LIBRARY_PREFIX%\bin\diffle.exe" skill > "%PREFIX%\share\agent-skills\diffle\SKILL.md"
+if errorlevel 1 exit /b 1

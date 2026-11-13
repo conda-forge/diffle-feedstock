@@ -1,7 +1,7 @@
 schema_version: 1
 
 context:
-  version: "0.5.1"
+  version: "0.5.2"
 
 package:
   name: diffle
@@ -9,7 +9,7 @@ package:
 
 source:
   url: https://github.com/moritzwilksch/diffle/archive/refs/tags/v${{ version }}.tar.gz
-  sha256: 3c2d4abab0f381b7dab64dc04a7a1b834869c294cf6ce74f3dee50a34b4d541d
+  sha256: fdf4619d0b138b74ad1a32c31701de8c8d144d3d1130aba07f7e859e00973237
 
 build:
   number: 0
@@ -56,6 +56,7 @@ tests:
         - diffle
       files:
         - etc/pixi/diffle/global-ignore-conda-prefix
+        - share/agent-skills/diffle/SKILL.md
         - if: unix
           then:
             - share/zsh/site-functions/_diffle
@@ -64,6 +65,13 @@ tests:
   - script:
       - diffle --help
       - diffle --version
+  - script:
+      - if: unix
+        then: agentskills validate $CONDA_PREFIX/share/agent-skills/diffle
+        else: 'agentskills validate %CONDA_PREFIX%\share\agent-skills\diffle'
+    requirements:
+      run:
+        - skills-ref
 
 about:
   homepage: https://diffle.app
